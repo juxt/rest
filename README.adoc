@@ -130,13 +130,13 @@ should do this is up to you and your programming language.
 
 Return 400 if the request is not valid
 
-NOTE: TBD - this includes authentication
-
 ==== Validate parameters (OpenAPI)
 
 === Check method allowed
 
 Return a 405 if the method is not allowed on the resource, with an Allow header
+
+=== Add the Date header
 
 === Process the *request method*
 
@@ -183,12 +183,6 @@ control data (see 7.1, control data).
 === OPTIONS
 
 === Response
-
-==== Add the Date header
-
-==== Add the Server header
-
-
 
 
 
