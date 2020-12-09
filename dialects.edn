@@ -1,0 +1,5 @@
+;; Copyright © 2020, JUXT LTD.
+
+{"clojure-spin"
+ {:git-repo "https://github.com/juxt/spin"
+  :includedir "https://raw.githubusercontent.com/juxt/spin/master/doc"}}
