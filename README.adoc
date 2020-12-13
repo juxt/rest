@@ -7,15 +7,17 @@
 
 == Introduction
 
-This README contains a step-by-step guide will help you write the code for a
-standard. This means it will satisfy the minium requirements laid down by RFCs
+This README contains a step-by-step guide will help you code a standard
+https://en.wikipedia.org/wiki/Representational_state_transfer[REST]ful Web
+service.
+
+This means it will satisfy the minium requirements laid down by RFCs
 https://tools.ietf.org/html/rfc7231[7231],
 https://tools.ietf.org/html/rfc7232[7232],
 https://tools.ietf.org/html/rfc7233[7233],
 https://tools.ietf.org/html/rfc7234[7234] and
-https://tools.ietf.org/html/rfc7235[7235].]
-https://en.wikipedia.org/wiki/Representational_state_transfer[REST]ful Web
-service.
+https://tools.ietf.org/html/rfc7235[7235].
+
 
 ////
 Mention how you should strive not to follow this procedure for every endpoint,
