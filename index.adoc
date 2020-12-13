@@ -1,0 +1,5 @@
+= rest.guide
+
+Welcome to JUXT's guide to building REST services.
+
+* link:README-clojure-spin.html[Clojure edition]

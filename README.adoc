@@ -246,9 +246,3 @@ the user-agent (or human) how to avoid the error in future.
 
 . Add the *representation metadata* to the response headers, and stream the
 *representation data* as the the *body* of the response.
-
-
-[appendix]
-== Copyright
-
-This documentation is Copyright © 2020 JUXT LTD. All Rights Reserved.
