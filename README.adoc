@@ -107,7 +107,6 @@ If no authorization is necessary, skip this section.
 NOTE: Authorizing the request may involve some validation, e.g. of the
 `Authorization` header. This might yield a 400 or other error response.
 
-
 ==== Authenticate the request
 
 If you decide that the request needs to be authorized, the request must contain
@@ -143,8 +142,7 @@ Return 400 if the request is not valid
 
 Return a 405 if the method is not allowed on the resource, with an Allow header
 
-=== Add the Date header
-
+[[select-representation]]
 === Select the representation
 
 If the *request method* token is `GET` or `HEAD`, we must now select the
@@ -200,6 +198,26 @@ Return the representation, with validator header fields, payload semantics and
 control data (see 7.1, control data).
 ////
 
+=== Record the time
+
+We are now close to generating the response.
+
+1. Get the current time and store it ready for generating the `Date` response header.
+
+NOTE: Some servers add the `Date` header for you.
+
+=== Check not modified
+
+If the *request method* token is `GET` or `HEAD`, we will have selected the
+*representation* for the *resource*, in section [[select-representation]].
+
+We must now check to see if any *preconditions* in the request, when compared
+with corresponding *validators* that exist in the *representation metadata*,
+prior to proceeding.
+
+// TODO: Explain algorithm here, but first improve the existing spin algo
+because it's not aligned well enough to 7232.
+
 === Process the *request method*
 
 Go to the relevant procedure below, corresponding to the request method.
@@ -232,9 +250,6 @@ that we do not produce any body in the response.
 
 [[options]]
 === OPTIONS
-
-=== Response
-
 
 
 [[error-response]]
