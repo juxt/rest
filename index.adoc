@@ -2,4 +2,8 @@
 
 Welcome to JUXT's guide to building REST services.
 
+NOTE: This is very much work-in-progress but check back soon as we update it.
+
+Also, see the Git repo at https://github.com/juxt/rest for sources.
+
 * link:README-clojure-spin.html[Clojure edition]

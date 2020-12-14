@@ -209,7 +209,7 @@ NOTE: Some servers add the `Date` header for you.
 === Check not modified
 
 If the *request method* token is `GET` or `HEAD`, we will have selected the
-*representation* for the *resource*, in section [[select-representation]].
+*representation* for the *resource*, in section <<select-representation>>.
 
 We must now check to see if any *preconditions* in the request, when compared
 with corresponding *validators* that exist in the *representation metadata*,
