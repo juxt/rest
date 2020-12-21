@@ -263,3 +263,10 @@ the user-agent (or human) how to avoid the error in future.
 
 . Add the *representation metadata* to the response headers, and stream the
 *representation data* as the the *body* of the response.
+
+// Local Variables:
+// mode: outline
+// outline-regexp: "[=]+"
+// eval: (local-set-key (kbd "<M-up>") 'outline-move-subtree-up)
+// eval: (local-set-key (kbd "<M-down>") 'outline-move-subtree-down)
+// End:
