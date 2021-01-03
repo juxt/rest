@@ -5,19 +5,27 @@
 :sectlevels: 4
 :includedir:
 
-== Introduction
+Welcome to this unofficial yet comprehensive guide to creating
+https://en.wikipedia.org/wiki/Representational_state_transfer[REST]ful services
+that communicate over HTTP.
 
-This README contains a step-by-step guide will help you code a standard
-https://en.wikipedia.org/wiki/Representational_state_transfer[REST]ful Web
-service.
-
-This means it will satisfy the minium requirements laid down by RFCs
+By comprehensive, we mean that _every_ aspect of core HTTP is covered: content
+negotiation, conditional requests, ranges, authentication, all request methods
+and headers, and all response status codes and headers defined by the RFCs that
+govern HTTP today: https://tools.ietf.org/html/rfc7230[7230],
 https://tools.ietf.org/html/rfc7231[7231],
 https://tools.ietf.org/html/rfc7232[7232],
 https://tools.ietf.org/html/rfc7233[7233],
 https://tools.ietf.org/html/rfc7234[7234] and
 https://tools.ietf.org/html/rfc7235[7235].
 
+This guide is intended for developers wishing to write HTTP services from
+scratch, or developers building public or organisation-wide web-frameworks that
+seek to conform to the requirements of HTTP and REST.
+
+It is structured as a step-by-step guide.
+
+== Introduction
 
 ////
 Mention how you should strive not to follow this procedure for every endpoint,
