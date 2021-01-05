@@ -11,6 +11,7 @@
       (conj "-a" "allow-uri-read")
       (conj "-a" "nofooter")
       (conj "-a" "docinfo=shared-footer")
+      (conj "-a" "icons=font")
       (conj "--failure-level" "WARN")))
 
 (defn make-target-dir []

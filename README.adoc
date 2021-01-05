@@ -1,8 +1,8 @@
 = How to write a RESTful Web service
 :toc: left
-:toclevels: 4
+:toclevels: 2
 :sectnums:
-:sectlevels: 4
+:sectlevels: 3
 :includedir:
 
 Welcome to this unofficial yet comprehensive guide to creating
@@ -40,48 +40,79 @@ include::{includedir}/intro-language-setup.adoc[]
 [[check-service-available]]
 === Is the service available?
 
+[quote,,503 Service Unavailable -- Section 6.6.4 RFC 7231]
+____
+The 503 (Service Unavailable) status code indicates that the server
+is currently unable to handle the request due to a temporary overload
+or scheduled maintenance
+____
+
 . Check that your service is not overwhelmed with requests.
 
-. If it is, construct a `503 (Service Unavailable)` response and go to
-<<error-response>>. Otherwise, go to <<check-known-method>>.
+. If it is, throw an exception. Otherwise, go to <<check-implemented-method,the next
+step>>.
 
 NOTE: How you can tell this is beyond the scope of this guide. It might be a feature
 of the web listener you are working with. Or you might want to build something
 that signals that new web requests should temporarily suspended. If you don't
 know, just skip this section, it's optional.
 
+****
 include::{includedir}/check-service-available.adoc[]
+****
 
-[[check-known-method]]
-=== Check method is known
+==== References
 
-The next step is to check whether the request method is one your system
+* 503 Service Unavailable -- https://tools.ietf.org/html/rfc7231#section-6.6.4[Section 6.6.4, RFC 7231]
+* Retry-After -- https://tools.ietf.org/html/rfc7231#section-7.1.3[Section 7.1.3, RFC 7231]
+
+[[check-implemented-method]]
+=== Check method is implemented
+
+[quote,,501 Not Implemented -- Section 6.6.2 RFC 7231]
+____
+The 501 (Not Implemented) status code indicates that the server does
+not support the functionality required to fulfill the request.
+____
+
+The next step is to check whether the request method is one your implementation
 recognises.
 
-. Check if the *request method* is recognised, for _any_ resource. If not,
-construct a 501 `(Not Implemented)` response and go to <<error-response>>.
+. Check if the *request method* is recognised.
 
+.. If so, go to <<locate-resource,the next step>>.
+
+.. If not, throw an exception containing a 501 `(Not Implemented)` error response.
+
+****
 include::{includedir}/check-known-method.adoc[]
+****
 
+==== References
+
+* 501 Not Implemented -- https://tools.ietf.org/html/rfc7231#section-6.6.2[Section 6.6.2, RFC 7231]
+
+[[locate-resource]]
 === Locate the resource
 
-[quote,Section 2 RFC 7231]
+[quote,Resources -- Section 2 RFC 7231]
 ____
 The target of an HTTP request is called a "resource".
 ____
 
-The request contains the Uniform Resource Locator (URL), which as its name
-suggests, is used to locate the target resource.
+. Use the URL of the request to lookup or otherwise locate the resource object (which can be null).
 
-But first, what _is_ a resource? A resource can be anything! But for our
-purposes, we define a *resource* to be a _value_ (e.g. object, structure,
-entity, class instance in our programming language).
+.. Hold this data structure as a variable, and go to <<the next step>>.
 
-This value should include a set of *request method* tokens that indicate the
-request methods allowed on the resource.
+Typically, a resource object will include the following:
 
-It can also include any other attributes of the resource that may be useful
-later on (for example, for authorization or method execution).
+* The resource's identifier (the URI) or, at least, its path
+* Which methods are allowed on the resource?
+* Current representations
+* Which ranges, if any, are acceptable?
+* Authorization rules - who is allowed to access this resource and how?
+* The allowed types of submitted representations
+* Anything else that is useful
 
 ////
 The set of *request method* tokens might very well depend on details in the
@@ -94,73 +125,61 @@ minimum, the *request method* in the current request), then these should be
 included in the *resource* too.
 ////
 
-. Construct the *resource* structure that corresponds to the *URL path* in the
-*request*, using any other information in the request as necessary. If no
-*resource* corresponds with the path, construct a NULL resource.
-+
 TIP: Try to avoid using the *request method* when locating a resource--a
 *resource* value should encompass _all_ its methods.
 
+****
 include::{includedir}/locate-resource.adoc[]
+****
+
+=== Authenticate the request
+
+. Add to the request, any roles, credentials or entitlements that can be
+acquired. Use information in the resource found in <<locate-resource>> to
+determine the *authentication scheme* and/or *protection space*.
+
+.. This usually involved inspecting the request's `Authorization` header and/or other
+headers, frequently `Cookie` headers.
 
 === Authorize the request
 
-Now's the time to authorize the request, to ensure the request has the authority
-to interact, with the method in the request, on the resource you have located.
+. Update the resource object according to the authenticated request's roles,
+credentials or other entitlements.
 
-Often, this will involve inspecting some data about the resource.
+.. If the resource cannot be accessed without credentials, and if none have been
+supplied (or ones that have been supplied are invalid) throw an exception that
+contains a 401 response. This response may include a `WWW-Authenticate` header
+to indicate to the user agent that it should resend the request with
+credentials.
 
-If no authorization is necessary, skip this section.
-
-NOTE: Authorizing the request may involve some validation, e.g. of the
-`Authorization` header. This might yield a 400 or other error response.
-
-==== Authenticate the request
-
-If you decide that the request needs to be authorized, the request must contain
-the necessary credentials.
-
-These might be provided in the form of an `Authorization` header, by a cookie or
-by some other means.
-
-If there are credentials provided in the request, then you should respond with a
-401 error response.
-
-Depending on the means of authentication, you might also want to add a
-`WWW-Authenticate` header or some else to indicate to the user agent that it
-should resend the request with credentials.
-
-Go to <<error-response>> for how to send an error response.
-
-This can be done by inspecting the request
-headers, in particular, the `Authorization` header and establishing any claims
-made are true (i.e. they can be trusted). This might involve verifying digital
-signatures or performing a query on a database containing sessions.
-
-Such claims and session information can be attached to the request. How you
-should do this is up to you and your programming language.
+.. If the request does contain valid authenticated credentials, but they are
+insufficient to provide access to the resource given the request's method, throw
+an exception that contains a 403 response.
 
 === Validate the request with respect to the resource
 
-Return 400 if the request is not valid
+. If the request is not valid, throw an exception containing a 400 response.
 
-==== Validate parameters (OpenAPI)
+This step might also involve validating parameters, for example, to meet the expectations of a set of OpenAPI parameter declarations.
 
+[[check-method-allowed]]
 === Check method allowed
 
-Return a 405 if the method is not allowed on the resource, with an Allow header
+. Check the request method against the methods allowed by the resource.
 
-[[select-representation]]
-=== Select the representation
+.. If the request method isn't allowed, throw an exception containing a 405
+response and an `Allow` header.
 
-If the *request method* token is `GET` or `HEAD`, we must now select the
-*representation* (or *representations*) for the *resource*.
+=== Record the time
 
-Otherwise (if the *request method* token is _not_ `GET` or `HEAD`), then _skip
-to the next section_.
+. Get the system time and store it in a variable.
 
-A *representation* consists of a set of *representation metadata* and sufficient
-additional information to produce a *stream of representation data*.
+=== Establish the current representations
+
+. Using the resource, determine the current representations and store in a
+variable.
+
+=== Negotiate the most acceptable current representation
 
 For the given *resource*, determine the content negotiation strategy and follow
 one of the sections below (although it is permissable to use a hybrid or
@@ -175,16 +194,17 @@ commonly strategy.
 [[proactive-content-negotiation]]
 ==== Proactive Content Negotiation
 
-1. Determine the set of available *representations* for the resource.
+1. Determine the set of available current representations for the resource.
 
-2. If step 1. yields no representations, return a `404 (Not Found)` error
-response. Go to <<error-response>>.
+2. If step 1. yields no representations, and the method is a GET or HEAD, throw an exception containing a `404 (Not Found)` error
+response.
 
-3. Select the most acceptable representation from this set, using the preferences contained in the request. If one exists, we'll use this one - _go to the next section_.
-
-4. If step 3. yields no such acceptable representation, return a `406 (Not
-Acceptable)` error response. Go to <<error-response>>.  Construct a body
-containing links to each unacceptable representation from step 1.
+3. Select the most acceptable representation from this set, using the preferences contained in the request.
+.. If there is no such acceptable representation, and the method is a GET
+or HEAD, throw an exception containing a `406 (Not Acceptable)` error
+response. Construct a body containing links to each unacceptable representation
+from step 1.
+.. Otherwise store the most acceptable current representation in a variable called `selected-representation` to move to the next step.
 
 include::{includedir}/proactive-content-negotiation.adoc[]
 
@@ -200,31 +220,6 @@ include::{includedir}/proactive-content-negotiation.adoc[]
 4. If step 3. yields a single representation, then use this as the representation and _move on to the next section_.
 
 5. If step 3. yields multiple *representations*, respond with a 300 response and construct a body containing links to each representation in this filtered set.
-
-////
-Return the representation, with validator header fields, payload semantics and
-control data (see 7.1, control data).
-////
-
-=== Record the time
-
-We are now close to generating the response.
-
-1. Get the current time and store it ready for generating the `Date` response header.
-
-NOTE: Some servers add the `Date` header for you.
-
-=== Check not modified
-
-If the *request method* token is `GET` or `HEAD`, we will have selected the
-*representation* for the *resource*, in section <<select-representation>>.
-
-We must now check to see if any *preconditions* in the request, when compared
-with corresponding *validators* that exist in the *representation metadata*,
-prior to proceeding.
-
-// TODO: Explain algorithm here, but first improve the existing spin algo
-because it's not aligned well enough to 7232.
 
 === Process the *request method*
 
@@ -243,6 +238,15 @@ Go to the relevant procedure below, corresponding to the request method.
 NOTE: The procedure for HEAD is identical to that of GET, with the exception
 that we do not produce any body in the response.
 
+. Evaluate preconditions
+
+. Optionally, if there is a `Range` header, parse it.
+
+.. If the units of the range header isn't supported by the resource, throw an exception with a `400 Bad Request` error response.
+
+.. If there is an `If-Range` header, process it (TODO)
+
+. Get the payload of the selected representation
 
 [[post]]
 === POST
