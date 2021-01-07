@@ -428,7 +428,6 @@ Go to the relevant procedure below, corresponding to the request method.
 . <<post>>
 . <<put>>
 . <<delete>>
-. <<patch>>
 . <<options>>
 
 [[get]]
@@ -470,9 +469,6 @@ containing a `411 Length Required` error response.
 
 [[delete]]
 === DELETE
-
-[[patch]]
-=== PATCH
 
 [[options]]
 === OPTIONS
