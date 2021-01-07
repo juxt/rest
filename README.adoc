@@ -8,6 +8,17 @@
 Welcome to this comprehensive guide to creating
 https://en.wikipedia.org/wiki/Representational_state_transfer[REST]ful services.
 
+[CAUTION]
+--
+This page is a work-in-progress. Consider ALPHA status. It was last
+updated on {docdatetime}.
+
+However, it is considered in a state worthy of
+publication and you should still be able to learn a lot from it.
+
+If you want to provide feedback, head over to the project https://github.com/juxt/rest/discussions[discussions] page.
+--
+
 ////
 By comprehensive, we mean that _every_ aspect of core HTTP is covered: content
 negotiation, conditional requests, ranges, authentication, all request methods
@@ -136,6 +147,12 @@ Good luck, be brave, take small assured steps, one step at a time.
 
 If you want a complete solution to study, you can find one
 https://github.com/juxt/spin/blob/master/examples/demo/src/demo.clj[here].
+
+=== How to get involved?
+
+If you want to provide feedback, share ideas or otherwise contribute, please
+head over to our project https://github.com/juxt/rest/discussions[discussions]
+page.
 
 == Preliminaries
 
