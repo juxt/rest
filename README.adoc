@@ -175,7 +175,7 @@ NOTE: The decision whether to adop the classic synchronous single-arity Ring
 handler functions, or asynchronous 3-arity Ring handler functions, is out of
 scope for this guide. You may use either.
 
-== The Step-by-step Guide
+== Common steps for every request
 
 [[check-service-available]]
 === Is the service available?
@@ -420,9 +420,9 @@ See https://github.com/juxt/pick for further details.
 
 5. If step 3. yields multiple *representations*, respond with a 300 response and construct a body containing links to each representation in this filtered set.
 
-=== Process the *request method*
+=== Perform the method
 
-Go to the relevant procedure below, corresponding to the request method.
+. Go to the section that matches the request method:
 
 . <<get>>
 . <<post>>
@@ -430,8 +430,15 @@ Go to the relevant procedure below, corresponding to the request method.
 . <<delete>>
 . <<options>>
 
+[[evaluate-preconditions]]
+=== Evaluate preconditions
+
+Some methods require that certain preconditions are tested before they can proceed.
+
+NOTE: TBD
+
 [[get]]
-=== GET (or HEAD)
+== The GET (and HEAD) methods
 
 NOTE: The procedure for HEAD is identical to that of GET, with the exception
 that we do not produce any body in the response.
@@ -447,10 +454,10 @@ that we do not produce any body in the response.
 . Get the payload of the selected representation
 
 [[post]]
-=== POST
+== The POST method
 
 [[put]]
-=== PUT
+== The PUT method
 
 [quote,,PUT]
 ____
@@ -465,17 +472,15 @@ ____
 containing a `411 Length Required` error response.
 
 
-
-
 [[delete]]
-=== DELETE
+== The DELETE method
 
 [[options]]
-=== OPTIONS
+== The OPTIONS method
 
 
 [[error-response]]
-=== Send an error response
+== Supplementary steps
 
 If you want to send an error response, you should decide whether to send a body
 in the response. This might contain information about the error and explain to
