@@ -94,7 +94,7 @@ called *Spin*, that much of the example code utilises.
 
 Spin also brings in some additional niche libraries:
 
-* https://github.com/juxt/reap[pick] -- when you have more than one 'representation' for a resource to select, you can ask pick to choose for you. Pick is based on the same algorithm used by the Apache HTTP Server.
+* https://github.com/juxt/pick[pick] -- when you have more than one 'representation' for a resource to select, you can ask pick to choose for you. Pick is based on the same algorithm used by the Apache HTTP Server.
 
 * https://github.com/juxt/reap[reap] -- when Spin and Pick need to encode and decode certain strings (e.g. inside HTTP headers), they call out to corresponding functions in Reap. This reduces the amount of code, and protects against certain security attacks based on sending malformed inputs.
 
