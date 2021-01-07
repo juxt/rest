@@ -2,4 +2,6 @@
 
 {"clojure-spin"
  {:git-repo "https://github.com/juxt/spin"
-  :includedir "https://raw.githubusercontent.com/juxt/spin/master/doc"}}
+  :includedir "/home/mal/src/github.com/juxt/spin/doc"
+  ;;:includedir "https://raw.githubusercontent.com/juxt/spin/master/doc"
+  }}
