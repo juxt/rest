@@ -1,14 +1,14 @@
-= How to write a RESTful Web service
+= How to write a RESTful Web API: a declarative approach
 :toc: left
 :toclevels: 2
 :sectnums:
 :sectlevels: 3
 :includedir:
 
-Welcome to this unofficial yet comprehensive guide to creating
-https://en.wikipedia.org/wiki/Representational_state_transfer[REST]ful services
-that communicate over HTTP.
+Welcome to this comprehensive guide to creating
+https://en.wikipedia.org/wiki/Representational_state_transfer[REST]ful services.
 
+////
 By comprehensive, we mean that _every_ aspect of core HTTP is covered: content
 negotiation, conditional requests, ranges, authentication, all request methods
 and headers, and all response status codes and headers defined by the RFCs that
@@ -24,18 +24,145 @@ scratch, or developers building public or organisation-wide web-frameworks that
 seek to conform to the requirements of HTTP and REST.
 
 It is structured as a step-by-step guide.
+////
 
 == Introduction
 
 ////
-Mention how you should strive not to follow this procedure for every endpoint,
-but establish resource metadata which can influence processing and make your
-handlers far more reusable and generic.
+Make this guide a gentle sympathetic approach - 'Beware of the Curse of Knowledge' (https://www.bti360.com/what-ive-learned-in-45-years-in-the-software-industry/)
 ////
 
-include::{includedir}/intro-language-setup.adoc[]
+So you want to provide a RESTful Web API?
 
-== Step-by-step Guide
+If you're happy with a first-cut quick-and-dirty get-the-job-done
+implementation, then perhaps this guide isn't for you.
+
+If you're new to programming, this is not the best guide to follow either
+(although writing a Web API isn't a _bad_ programming project to improve your
+skills).
+
+If you want to write a 'proper' RESTful Web API, one that can be run in a
+production environment, work well, be solid and maintainable, then *this is the
+guide for you*.
+
+Along the way, you'll learn about what it really means to be a RESTful Web API, and much more, including:
+
+* The difference between resources and representations
+* Content Negotiation--how you can have multiple representations for each resource, and when you need to pick one!
+* Methods--what you have to do for each method you support
+* Status codes--which status codes you should return in your responses, and when
+* Conditional requests--how certain requests should proceed only if certain tests pass (called preconditions)
+* Ranges--when representations are large, how to serve only the fragments that are actually needed
+* Cacheing--how to make the use of web caches to help your API to scale
+* Authorization--how to restrict access to your service to authorized parties
+
+This guide is meant to be followed one step after another. At each step, feel
+free to stop and perhaps dive into some of the references we'll provide. If
+nothing else, you'll learn a lot!
+
+=== Some words on the 'declarative approach'
+
+One of the six 'architectural constraints' of REST is the 'Uniform
+interface'. Your API should be broken up into one or more *resources*.
+
+In REST, each resource should behave more-or-less the same way, following a
+consistent set of rules. Although these rules are numerous and fairly tricky to
+implement in places, the good news is that you shouldn't have to follow these
+steps for _each_ resource you create.
+
+The code you write as a result of following this guide should work for _all_
+your resources. Ultimately, that should mean a lot less code to write and
+maintain!
+
+The way we will achieve such code _economy_ is by using a declarative
+approach. Where possible, your code should behave according to the details of
+individual resources provided as input argument.
+
+In our view, all code should either be implementing a compiler or an interpretter.
+
+TIP: Another benefit of this approach is that having separated the code from the
+data declarations that drive it, you can store that data inside a
+_database_. Hey, you could even use our https://opencrux.com[Crux] database!
+
+=== Clojure?
+
+This guide has chosen to use https://clojure.org/[Clojure] for its example code.
+
+That said, it doesn't actually matter which programming language you choose to
+implement your web API in. The example code is small and easily translated to
+other programming languages.
+
+=== Library support
+
+If you do want to follow this guide using Clojure, you'll be able to make use of
+https://github.com/juxt/spin[a support library] of 'helper' functions,
+called *Spin*, that much of the example code utilises.
+
+Spin also brings in some additional niche libraries:
+
+* https://github.com/juxt/reap[pick] -- when you have more than one 'representation' for a resource to select, you can ask pick to choose for you. Pick is based on the same algorithm used by the Apache HTTP Server.
+
+* https://github.com/juxt/reap[reap] -- when Spin and Pick need to encode and decode certain strings (e.g. inside HTTP headers), they call out to corresponding functions in Reap. This reduces the amount of code, and protects against certain security attacks based on sending malformed inputs.
+
+=== Is this a web framework?
+
+No.
+
+[quote,Stuart Halloway,Twitter]
+____
+Library composition outperforms framework callbacks in the long run. The long run typically begins on day two.
+____
+
+None of the support libraries used here accept 'callbacks', and that's why we
+don't call the composition a 'web framework'.
+
+The major downside of our approach *more work for _you_ to do*. There is no
+magical web framework to orchestrate everything for you.
+
+The payback is that you retain control of your implementation. Ultimately, _you_
+make the decisions and can choose to deviate from this guide when
+appropriate. You spend more time wrangling your own problems and less time
+wrangling the web framework you've adopted.
+
+This also leads to you reaching a deeper _understanding_ of your own web API
+service, what it does and how to change it to meet new requirements. You'll also
+learn more about the parts of the web that web frameworks hide from you.
+
+_For many, this payback is well worth the extra effort._
+
+Good luck, be brave, take small assured steps, one step at a time.
+
+=== Is there a complete solution somewhere?
+
+If you want a complete solution to study, you can find one
+https://github.com/juxt/spin/blob/master/examples/demo/src/demo.clj[here].
+
+== Preliminaries
+
+=== Clojure setup
+
+With Clojure's Ring library, we can handle a web request with a
+function. <<ring-handler>> illustrates a simple function that takes the web
+request and returns a web response.
+
+[[ring-handler]]
+.A simple Ring handler
+====
+[source,clojure]
+----
+(fn [req] <1>
+  {:status 200 :body "OK"} <2>
+)
+----
+<1> `req` is a Clojure map, containing details of the incoming web request
+<2> This map is the value returned from the function. It contains details of the outgoing web response.
+====
+
+NOTE: The decision whether to adop the classic synchronous single-arity Ring
+handler functions, or asynchronous 3-arity Ring handler functions, is out of
+scope for this guide. You may use either.
+
+== The Step-by-step Guide
 
 [[check-service-available]]
 === Is the service available?
@@ -57,9 +184,27 @@ of the web listener you are working with. Or you might want to build something
 that signals that new web requests should temporarily suspended. If you don't
 know, just skip this section, it's optional.
 
-****
-include::{includedir}/check-service-available.adoc[]
-****
+====
+In Clojure, when throwing an exception, embed the Ring response as exception data. This might include a `Retry-After` header and the time to wait, in seconds.
+
+[source,clojure]
+----
+(throw
+  (ex-info "Service unavailable"
+  {::response <1>
+   {:status 503
+    :headers {"retry-after" "120"} <2>
+    :body "Service Unavailable\r\n"}}))
+----
+<1> Embed the Ring response as exception data.
+<2> Add a `Retry-After` header.
+
+Your whole handler should be wrapped in a
+https://clojuredocs.org/clojure.core/try[try/catch] block.
+
+The catch block should catch the exception, extract the Ring response, and
+return it to the Ring adapter of th web server you are running.
+====
 
 ==== References
 
@@ -82,11 +227,28 @@ recognises.
 
 .. If so, go to <<locate-resource,the next step>>.
 
-.. If not, throw an exception containing a 501 `(Not Implemented)` error response.
+.. If not, throw an exception containing a `501 (Not Implemented)` error response.
 
-****
-include::{includedir}/check-known-method.adoc[]
-****
+====
+In Clojure, throw an exception like this:
+
+[source,clojure]
+----
+(throw
+  (ex-info
+   "Method not implemented"
+   {::response
+    {:status 501
+     :body "Not Implemented\r\n"}}))
+----
+
+The spin library offers a helper function that checks the request method is one of a set of know common HTTP methods, and if necessary, throws the exception as described:
+
+[source,clojure]
+----
+(spin/check-method-not-implemented! request)
+----
+====
 
 ==== References
 
@@ -128,9 +290,27 @@ included in the *resource* too.
 TIP: Try to avoid using the *request method* when locating a resource--a
 *resource* value should encompass _all_ its methods.
 
-****
-include::{includedir}/locate-resource.adoc[]
-****
+====
+In Clojure, you might choose to use a map as a *resource*.
+
+For example, here is a map that corresponds to a *resource*. It tells us that
+the resource allows the methods GET, POST, PUT and DELETE.
+
+[source,clojure]
+----
+{::spin/path "/orders"
+ ::spin/methods #{:get :post :put :delete}}
+----
+
+You can use a router to locate the *resource*. See
+link:examples/reitit/src/reitit_example.clj[] for an example using the
+https://github.com/metosin/reitit[Reitit] router.
+
+Alternatively, we can resolve the resource in any other way that's
+appropriate. For example, since resources can be modelled as data values, they
+can be stored in a key/value database. Locating a resource is simply a matter of
+looking it up using the URL as the key.
+====
 
 === Authenticate the request
 
@@ -148,13 +328,15 @@ credentials or other entitlements.
 
 .. If the resource cannot be accessed without credentials, and if none have been
 supplied (or ones that have been supplied are invalid) throw an exception that
-contains a 401 response. This response may include a `WWW-Authenticate` header
-to indicate to the user agent that it should resend the request with
-credentials.
+contains a `401 (Unauthorized)` error response. This response may include a
+`WWW-Authenticate` header to indicate to the user agent that it should resend
+the request with credentials.
 
 .. If the request does contain valid authenticated credentials, but they are
 insufficient to provide access to the resource given the request's method, throw
-an exception that contains a 403 response.
+an exception that contains a `403 (Forbidden)` error response, or a `404 (Not
+Found)` error response if you want to hide the existence of the unauthorized
+resource to the user.
 
 === Validate the request with respect to the resource
 
@@ -167,8 +349,7 @@ This step might also involve validating parameters, for example, to meet the exp
 
 . Check the request method against the methods allowed by the resource.
 
-.. If the request method isn't allowed, throw an exception containing a 405
-response and an `Allow` header.
+.. If the request method isn't allowed, throw an exception containing a '405 (Method Not Allowed)' error response and an `Allow` header.
 
 === Record the time
 
@@ -196,8 +377,8 @@ commonly strategy.
 
 1. Determine the set of available current representations for the resource.
 
-2. If step 1. yields no representations, and the method is a GET or HEAD, throw an exception containing a `404 (Not Found)` error
-response.
+2. If step 1. yields no representations, and the method is a GET or HEAD, throw
+an exception containing a `404 (Not Found)` error response.
 
 3. Select the most acceptable representation from this set, using the preferences contained in the request.
 .. If there is no such acceptable representation, and the method is a GET
@@ -206,7 +387,12 @@ response. Construct a body containing links to each unacceptable representation
 from step 1.
 .. Otherwise store the most acceptable current representation in a variable called `selected-representation` to move to the next step.
 
-include::{includedir}/proactive-content-negotiation.adoc[]
+****
+The https://github.com/juxt/pick[pick] library is written expressly for the
+purpose of proactive (server-driven) content negotiation.
+
+See https://github.com/juxt/pick for further details.
+****
 
 [[reactive-content-negotiation]]
 ==== Reactive Content Negotiation
@@ -253,6 +439,21 @@ that we do not produce any body in the response.
 
 [[put]]
 === PUT
+
+[quote,,PUT]
+____
+The PUT method requests that the state of the target resource be
+created or replaced with the state defined by the representation
+enclosed in the request message payload.
+____
+
+. Read the representation enclosed in the request message payload
+
+.. Check the request has a `Content-Length` header. If not, throw an exception
+containing a `411 Length Required` error response.
+
+
+
 
 [[delete]]
 === DELETE
