@@ -97,7 +97,8 @@ _database_. Hey, you could even use our https://opencrux.com[Crux] database!
 
 === Clojure?
 
-This guide has chosen to use https://clojure.org/[Clojure] for its example code.
+We've chosen to use https://clojure.org/[Clojure] for the example code in this
+guide. Clojure is concise, and lends itself well to data-driven coding.
 
 That said, it doesn't actually matter which programming language you choose to
 implement your web API in. The example code is small and easily translated to
