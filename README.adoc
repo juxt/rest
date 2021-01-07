@@ -19,19 +19,6 @@ publication and you should still be able to learn a lot from it.
 If you want to provide feedback, head over to the project https://github.com/juxt/rest/discussions[discussions] page.
 --
 
-////
-By comprehensive, we mean that _every_ aspect of core HTTP is covered: content
-negotiation, conditional requests, ranges, authentication, all request methods
-and headers, and all response status codes and headers defined by the RFCs that
-govern HTTP today.
-
-This guide is intended for developers wishing to write HTTP services from
-scratch, or developers building public or organisation-wide web-frameworks that
-seek to conform to the requirements of HTTP and REST.
-
-It is structured as a step-by-step guide.
-////
-
 == Introduction
 
 ////
