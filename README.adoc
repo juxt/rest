@@ -30,7 +30,7 @@ So you want to provide a RESTful Web API?
 If you're happy with a first-cut quick-and-dirty get-the-job-done
 implementation, then perhaps this guide isn't for you.
 
-If you're new to programming, this is not the best guide to follow either
+If you're new to programming, then this probably isn't the best guide to follow either
 (although writing a Web API isn't a _bad_ programming project to improve your
 skills).
 
