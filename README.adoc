@@ -242,7 +242,7 @@ In Clojure, throw an exception like this:
      :body "Not Implemented\r\n"}}))
 ----
 
-The spin library offers a helper function that checks the request method is one of a set of know common HTTP methods, and if necessary, throws the exception as described:
+The spin library offers a helper function that checks the request method is one of a set of known common HTTP methods, and if necessary, throws the exception as described:
 
 [source,clojure]
 ----
