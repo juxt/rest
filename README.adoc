@@ -23,12 +23,7 @@ If you want to provide feedback, head over to the project https://github.com/jux
 By comprehensive, we mean that _every_ aspect of core HTTP is covered: content
 negotiation, conditional requests, ranges, authentication, all request methods
 and headers, and all response status codes and headers defined by the RFCs that
-govern HTTP today: https://tools.ietf.org/html/rfc7230[7230],
-https://tools.ietf.org/html/rfc7231[7231],
-https://tools.ietf.org/html/rfc7232[7232],
-https://tools.ietf.org/html/rfc7233[7233],
-https://tools.ietf.org/html/rfc7234[7234] and
-https://tools.ietf.org/html/rfc7235[7235].
+govern HTTP today.
 
 This guide is intended for developers wishing to write HTTP services from
 scratch, or developers building public or organisation-wide web-frameworks that
@@ -64,7 +59,7 @@ Along the way, you'll learn about what it really means to be a RESTful Web API, 
 * Status codes--which status codes you should return in your responses, and when
 * Conditional requests--how certain requests should proceed only if certain tests pass (called preconditions)
 * Ranges--when representations are large, how to serve only the fragments that are actually needed
-* Cacheing--how to make the use of web caches to help your API to scale
+* Caching--how to make the use of web caches to help your API to scale
 * Authorization--how to restrict access to your service to authorized parties
 
 This guide is meant to be followed one step after another. At each step, feel
@@ -494,6 +489,44 @@ the user-agent (or human) how to avoid the error in future.
 
 . Add the *representation metadata* to the response headers, and stream the
 *representation data* as the the *body* of the response.
+
+
+
+[bibliography]
+== References
+
+* [[[cowboy]]] https://github.com/ninenines/cowboy[Cowboy] is a callback-based web framework in Erlang, sharing similar goals of full conformance with HTTP standards.
+
+* [[[Fielding-2000]]] R. Fielding https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm[Architectural Styles and
+the Design of Network-based Software Architectures]. 2000
+
+* [[[liberator]]] https://github.com/clojure-liberator/liberator[Liberator] is a Clojure library by Philip Meier _(et. al.)_ based on Alan Dean's https://github.com/basho/webmachine/blob/master/docs/http-headers-status-v3.png[activity diagram].
+
+* [[[RFC7230]]] R. Fielding, J. Rescheke, _(et. al.)_ https://tools.ietf.org/html/rfc7230[RFC 7230. Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing]. Internet Engineering Task Force (IETF). 2014.
+
+* [[[RFC7231]]] R. Fielding, J. Rescheke, _(et. al.)_ https://tools.ietf.org/html/rfc7231[RFC 7231. Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content]. Internet Engineering Task Force (IETF). 2014.
+
+* [[[RFC7232]]] R. Fielding, J. Rescheke, _(et. al.)_ https://tools.ietf.org/html/rfc7232[RFC 7232. Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests]. Internet Engineering Task Force (IETF). 2014.
+
+* [[[RFC7233]]] R. Fielding, J. Rescheke, _(et. al.)_ https://tools.ietf.org/html/rfc7233[RFC 7233. Hypertext Transfer Protocol (HTTP/1.1): Range Requests]. Internet Engineering Task Force (IETF). 2014.
+
+* [[[RFC7234]]] R. Fielding, J. Rescheke, _(et. al.)_ https://tools.ietf.org/html/rfc7234[RFC 7234. Hypertext Transfer Protocol (HTTP/1.1): Caching]. Internet Engineering Task Force (IETF). 2014.
+
+* [[[RFC7235]]] R. Fielding, J. Rescheke, _(et. al.)_ https://tools.ietf.org/html/rfc7235[RFC 7235. Hypertext Transfer Protocol (HTTP/1.1): Authentication]. Internet Engineering Task Force (IETF). 2014.
+
+* [[[Webmachine]]] https://github.com/basho/webmachine[webmachine] is based on an https://github.com/basho/webmachine/blob/master/docs/http-headers-status-v3.png[activity diagram], first created by Alan Dean.
+
+* [[[yada]]] https://github.com/juxt/yada[yada] is a JUXT project with similar aims but technically a framework requiring callback functions.
+
+
+////
+,
+https://tools.ietf.org/html/rfc7231[7231],
+https://tools.ietf.org/html/rfc7232[7232],
+https://tools.ietf.org/html/rfc7233[7233],
+https://tools.ietf.org/html/rfc7234[7234] and
+https://tools.ietf.org/html/rfc7235[7235].
+////
 
 // Local Variables:
 // mode: outline
