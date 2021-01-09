@@ -41,7 +41,7 @@ guide for you*.
 Along the way, you'll learn about what it really means to be a RESTful Web API, and much more, including:
 
 * The difference between resources and representations
-* Content Negotiation--how you can have multiple representations for each resource, and when you need to pick one!
+* Content negotiation--how resources can be mapped to multiple representations, and when you need to pick one
 * Methods--what you have to do for each method you support
 * Status codes--which status codes you should return in your responses, and when
 * Conditional requests--how certain requests should proceed only if certain tests pass (called preconditions)
@@ -162,7 +162,7 @@ NOTE: The decision whether to adop the classic synchronous single-arity Ring
 handler functions, or asynchronous 3-arity Ring handler functions, is out of
 scope for this guide. You may use either.
 
-== Common steps for every request
+== Request checks
 
 [[check-service-available]]
 === Is the service available?
@@ -275,6 +275,11 @@ Typically, a resource object will include the following:
 * Authorization rules - who is allowed to access this resource and how?
 * The allowed types of submitted representations
 * Anything else that is useful
+
+[quote,Roy Fielding,Architectural Styles and the Design of Network-based Software Architectures]
+____
+An origin server maintains a mapping from resource identifiers to the set of representations corresponding to each resource
+____
 
 ////
 The set of *request method* tokens might very well depend on details in the
@@ -407,7 +412,9 @@ See https://github.com/juxt/pick for further details.
 
 5. If step 3. yields multiple *representations*, respond with a 300 response and construct a body containing links to each representation in this filtered set.
 
-=== Perform the method
+=== Performing the acion
+
+You should now perform the action associated with the request method.
 
 . Go to the section that matches the request method:
 
@@ -416,13 +423,6 @@ See https://github.com/juxt/pick for further details.
 . <<put>>
 . <<delete>>
 . <<options>>
-
-[[evaluate-preconditions]]
-=== Evaluate preconditions
-
-Some methods require that certain preconditions are tested before they can proceed.
-
-NOTE: TBD
 
 [[get]]
 == The GET (and HEAD) methods
@@ -466,8 +466,75 @@ containing a `411 Length Required` error response.
 == The OPTIONS method
 
 
-[[error-response]]
+[appendix]
 == Supplementary steps
+
+The procedures in this section are linked to from the main content.
+
+[[evaluate-preconditions]]
+=== Evaluate preconditions
+
+For any request method that involves the selection or modification of a
+representation (e.g. GET, POST, PUT, DELETE), a set of preconditions are
+evaluated.
+
+Here's the procedure:
+
+. If the request contains an `If-Match` header field value, and
+
+.. If the value is `*` and the resource has no mapped representations, return a
+`412 (Precondition Failed)` error response.
+
+.. If none of the entity-tags in `If-Match` strongly match the entity tag of the
+selected representation, return a `412 (Precondition Failed)` error response.
+
+. If the request does not have an `If-Match` header, but contains the header
+`If-Unmodified-Since`, and
+
+.. If the `last-modified` value of the representation metadata of the selected
+representation is _after_ the date in the `If-Unmodified-Since` header, return a
+`412 (Precondition Failed)` error response.
+
+. If the request contains an `If-None-Match` header field value,
+
+.. If the `If-None-Match` header field value contains an entity-tag which weakly
+matches the `etag` value of the representation metadata of the selected
+representation, OR if the `If-None-Match` header value is `*` and there is at
+least one current representation for the resource,
+
+... If the request method is a GET or HEAD, return a `304 (Not Modified)`
+response,
+
+... Otherwise, return a `412 (Precondition Failed)` error response.
+
+. Otherwise, if the request does not have an `If-None-Match` header field value,
+
+.. If the request method is GET or HEAD, and the request has a
+`If-Modified-Since` header field value, unless the `last-modified` value of the
+representation metadata of the selected representation is after the value of the
+`If-Modified-Since` header field value, return a `304 (Not Modified)` response.
+
+====
+Spin has a utility function you can call with the request, resource and
+representation metadata of the selected representation.
+
+The function will evaluate the preconditions using the header field values in
+the request and the representation metadata of the selected representation,
+throwing an exception at any point one of the preconditions fails.
+
+[source,clojure]
+----
+(spin/evaluate-preconditions! request resource selected-representation-metadata)
+----
+====
+
+==== References
+
+See RFC 7233 Section 6
+
+
+
+=== Error
 
 If you want to send an error response, you should decide whether to send a body
 in the response. This might contain information about the error and explain to
