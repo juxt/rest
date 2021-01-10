@@ -438,7 +438,7 @@ See https://github.com/juxt/pick for further details.
 
 5. If step 3. yields multiple *representations*, respond with a 300 response and construct a body containing links to each representation in this filtered set.
 
-=== Performing the acion
+=== Performing the action
 
 You should now perform the action associated with the request method.
 
