@@ -298,14 +298,46 @@ TIP: Try to avoid using the *request method* when locating a resource--a
 ====
 In Clojure, you might choose to use a map as a *resource*.
 
-For example, here is a map that corresponds to a *resource*. It tells us that
-the resource allows the methods GET, POST, PUT and DELETE.
+For example, here is a map that corresponds to a fictional *resource*. It
+demonstrates a number of the declarations that are possible that are recognised
+by functions in the Spin library (denoted by the use of the `::spin` namespace
+prefix. Many other additional application-specific entries may be added.
 
 [source,clojure]
 ----
 {::spin/path "/orders"
- ::spin/methods #{:get :post :put :delete}}
+
+ ::spin/methods #{:get :post :put :delete} <1>
+
+ ::spin/representations <2>
+ [{::spin/representation-metadata <3>
+   {"content-type" "text/plain;charset=utf-8"
+    "last-modified" "Mon, 28 Dec 2020 15:00:00 GMT"}
+   ::spin/representation-data
+   {::spin/bytes …}}]
+
+ ::spin/max-content-length 8192 <4>
+ ::spin/acceptable <5>
+ {"accept" "text/plain,text/html,application/json"
+  "accept-charset" "utf-8"}
+
+ ::spin/authentication-scheme "Basic" <6>
+ ::spin/realm "Winterfell"
+ ::required-role {:get #{::valid-user} <7>
+                  :head #{::valid-user}
+                  :options #{::valid-user}}
+
+ ::spin/accept-ranges ["bytes"] <8>
+}
 ----
+<1> Allowed methods
+<2> Mappings to current representations, just one here
+<3> Representation metadata
+<4> The maximum content length of a representation in a request payload
+<5> Configuration describing acceptable representations in a request
+<6> The authentication scheme
+<7> Roles required on a per-method basis, a custom declaration (not recognised by Spin)
+<8> Declaration of the range types the resource can accept
 
 You can use a router to locate the *resource*, but since resources can be
 modelled as data values, they can be stored in a key/value database. Locating a
@@ -438,7 +470,7 @@ See https://github.com/juxt/pick for further details.
 
 5. If step 3. yields multiple *representations*, respond with a 300 response and construct a body containing links to each representation in this filtered set.
 
-=== Performing the action
+=== Perform the action
 
 You should now perform the action associated with the request method.
 
