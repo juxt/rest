@@ -618,7 +618,8 @@ throwing an exception at any point one of the preconditions fails.
 
 [source,clojure]
 ----
-(spin/evaluate-preconditions! request resource selected-representation-metadata)
+(spin/evaluate-preconditions!
+  request resource selected-representation-metadata date)
 ----
 ====
 
