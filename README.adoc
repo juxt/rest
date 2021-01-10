@@ -124,7 +124,7 @@ learn more about the parts of the web that web frameworks hide from you.
 
 _For many, this payback is well worth the extra effort._
 
-Good luck, be brave, take small assured steps, one step at a time.
+Good luck, be brave, take small deliberate steps, one at a time.
 
 === Is there a complete solution somewhere?
 
