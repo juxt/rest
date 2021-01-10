@@ -10,7 +10,7 @@ deploy: doc
 	aws s3 cp --acl public-read target/README.html s3://rest-guide/README.html
 
 watch:
-	ls index.adoc README.adoc docinfo-footer.html | entr make
+	ls index.adoc README.adoc docinfo-footer.html css/juxt.css | entr make
 
 clean:
 	rm -r target
