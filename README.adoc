@@ -5,7 +5,7 @@
 :sectlevels: 3
 :includedir:
 
-Welcome to this comprehensive guide to creating
+Here is a comprehensive guide to creating
 https://en.wikipedia.org/wiki/Representational_state_transfer[REST]ful services.
 
 [CAUTION]
