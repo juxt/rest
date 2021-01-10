@@ -700,17 +700,7 @@ the user-agent (or human) how to avoid the error in future.
 
 * [[[Webmachine]]] https://github.com/basho/webmachine[webmachine] is based on an https://github.com/basho/webmachine/blob/master/docs/http-headers-status-v3.png[activity diagram], first created by Alan Dean.
 
-* [[[yada]]] https://github.com/juxt/yada[yada] is a JUXT project with similar aims but technically a framework requiring callback functions.
-
-
-////
-,
-https://tools.ietf.org/html/rfc7231[7231],
-https://tools.ietf.org/html/rfc7232[7232],
-https://tools.ietf.org/html/rfc7233[7233],
-https://tools.ietf.org/html/rfc7234[7234] and
-https://tools.ietf.org/html/rfc7235[7235].
-////
+* [[[yada]]] https://github.com/juxt/yada[yada] is a JUXT project with similar aims but technically a framework requiring callback functions. The library composition of Spin, pick and reap is far more complete (in terms of conforming to the RFCs, in both breadth and depth) and accurate, but not as well battle-tested.
 
 // Local Variables:
 // mode: outline
