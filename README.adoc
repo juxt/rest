@@ -456,7 +456,7 @@ You should now perform the action associated with the request method.
 NOTE: The procedure for HEAD is identical to that of GET, with the exception
 that we do not produce any body in the response.
 
-. Evaluate preconditions
+. <<evaluate-preconditions,Evaluate the preconditions>>
 
 . Optionally, if there is a `Range` header, parse it.
 
@@ -469,6 +469,14 @@ that we do not produce any body in the response.
 [[post]]
 == The POST method
 
+The first step in processing a POST request is to receive any "representation
+enclosed in the request message payload" and check its validity.
+
+. <<receive-representation-in-request,Receive the representation in the request>>
+
+. Process the received representation. This may involve per-resource custom
+code.
+
 [[put]]
 == The PUT method
 
@@ -479,18 +487,46 @@ created or replaced with the state defined by the representation
 enclosed in the request message payload.
 ____
 
-. Read the representation enclosed in the request message payload
+The first step in processing a PUT request is to receive the "representation
+enclosed in the request message payload" and check its validity.
 
-.. Check the request has a `Content-Length` header. If not, throw an exception
-containing a `411 Length Required` error response.
+Here is the procedure:
+
+. <<receive-representation-in-request,Receive the representation in the request>>
+
+The second part of processing a PUT request is to update the state of the
+resource. The representation read from the request indicates that the state of
+the resource needs to change, and that might involve changing all its current
+representations together. Ideally, this should happen atomically (all changes
+should succeed together, or fail together).
+
+We must also evaluate any preconditions just before perform the required
+updates. To guarentee that we will avoid losing updates, we should run the
+preconditions at the beginning of the same transaction. That way, race
+conditions will be avoided.
+
+Therefore, here is the procedure:
+
+. Within a transaction,
+
+.. <<evaluate-preconditions,Evaluate any preconditions>>.
+
+.. Update the state of the resource (this might involve resource-specific code)
 
 
 [[delete]]
 == The DELETE method
 
+. <<evaluate-preconditions,Evaluate preconditions>>.
+
+. Delete the mapping between the URI and the resource (this might involve
+resource-specific code).
+
 [[options]]
 == The OPTIONS method
 
+. Return a `200 (OK)` response containing an `Allow` header to indicate the
+allowed methods on the resource.
 
 [appendix]
 == Supplementary steps
@@ -558,6 +594,42 @@ throwing an exception at any point one of the preconditions fails.
 
 See RFC 7233 Section 6
 
+[[receive-representation-in-request]]
+=== Receiving a representation enclosed in a request
+
+Here is the procedure:
+
+. If the request doesn't have a `Content-Length` header, return a `411 (Length
+Required)` error response.
+
+. If the value of the `Content-Length` header field is more than the maximum
+content length allowed by the resource, then return a `413 (Payload Too Large)`
+error response.
+
+. If the is no request message payload, return a `400 (Bad Request)` error
+response.
+
+. Check that the representation metadata in the request headers meet the
+acceptability criteria for the resource and if not, either reconfigure the
+resource, transform the PUT representation somehow, or reject the request with a
+`415 (Unsupported Media Type)` or `409 (Conflict)` error response.
+
+. Load the representation from the request message payload. Close the input
+stream after reading exactly the number of bytes declared by the
+`Content-Length` request header (and no more).
+
+====
+Spin has a utility function that implements this procedure:
+
+[source,clojure]
+----
+(spin/receive-representation request resource date)
+----
+
+Currently, if the representation doesn't not meet the criteria in the resource's
+configuration, the request is rejected. There is no attempt to recover, either
+by reconfiguring the resource or transforming the representation.
+====
 
 
 === Error
