@@ -307,15 +307,41 @@ the resource allows the methods GET, POST, PUT and DELETE.
  ::spin/methods #{:get :post :put :delete}}
 ----
 
-You can use a router to locate the *resource*. See
-link:examples/reitit/src/reitit_example.clj[] for an example using the
-https://github.com/metosin/reitit[Reitit] router.
-
-Alternatively, we can resolve the resource in any other way that's
-appropriate. For example, since resources can be modelled as data values, they
-can be stored in a key/value database. Locating a resource is simply a matter of
-looking it up using the URL as the key.
+You can use a router to locate the *resource*, but since resources can be
+modelled as data values, they can be stored in a key/value database. Locating a
+resource is simply a matter of looking it up using the URL as the key.
 ====
+
+.Why not use a router?
+****
+Many, if not most, web frameworks provide a mechanism for 'routing' the URL to
+some code logic or function that will perform the method requested in the
+request.
+
+This makes sense for tranditional RPC-based protocols where each procedure is
+specific to an application.
+
+But with REST, procedures are not specific to the application, but standardised
+as part of a
+https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5[uniform
+interface].
+
+[quote,Roy Fielding,Chapter 5 – Representational State Transfer (REST)]
+____
+The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components.
+____
+
+While there is certainly some "implementation details behind the resource
+interface (which are) hidden by the server", these implementation details are
+not _only_ consideration when creating a REST service. The resource interface
+itself needs to be implemented too!
+
+For this reason, it is better to use a router to locate a _data description of
+the resource_, which can be fed into standard algorithms (as we do in this
+guide), rather than routing straight to a resource's _implementation code_ and
+having to duplicate the interface code for each method on each resource.
+****
+
 
 === Authenticate the request
 
@@ -552,8 +578,7 @@ the user-agent (or human) how to avoid the error in future.
 
 * [[[cowboy]]] https://github.com/ninenines/cowboy[Cowboy] is a callback-based web framework in Erlang, sharing similar goals of full conformance with HTTP standards.
 
-* [[[Fielding-2000]]] R. Fielding https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm[Architectural Styles and
-the Design of Network-based Software Architectures]. 2000
+* [[[Fielding-2000]]] Fielding, Roy Thomas. https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm[Architectural Styles and the Design of Network-based Software Architectures]. Doctoral dissertation, University of California, Irvine, 2000.
 
 * [[[liberator]]] https://github.com/clojure-liberator/liberator[Liberator] is a Clojure library by Philip Meier _(et. al.)_ based on Alan Dean's https://github.com/basho/webmachine/blob/master/docs/http-headers-status-v3.png[activity diagram].
 
