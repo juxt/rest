@@ -154,8 +154,8 @@ request and returns a web response.
   {:status 200 :body "OK"} <2>
 )
 ----
-<1> `req` is a Clojure map, containing details of the incoming web request
-<2> This map is the value returned from the function. It contains details of the outgoing web response.
+<1> `req` is a Clojure map, containing details of the incoming web request.
+<2> This is a Clojure map, the value returned from the function, representing the HTTP response.
 ====
 
 NOTE: The decision whether to adop the classic synchronous single-arity Ring
