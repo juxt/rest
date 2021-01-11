@@ -303,9 +303,9 @@ TIP: Try to avoid using the *request method* when locating a resource--a
 
 .The resource structure
 ====
-In Clojure, you might choose to use a map as a *resource*.
+In Clojure, you might choose to use to model a *resource* as a _map_.
 
-For example, here is a map that corresponds to a fictional *resource*. It
+For example, here is a map that corresponds to a certain *resource*. It
 demonstrates a number of the declarations that are possible that are recognised
 by functions in the Spin library (denoted by the use of the `::spin` namespace
 prefix. Many other additional application-specific entries may be added.
