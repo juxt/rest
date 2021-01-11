@@ -430,7 +430,6 @@ table.pyhltable .linenodiv { background: none !important; padding-right: 0 !impo
 .quoteblock { margin: 0 1em 1.25em 1.5em; display: table; }
 .quoteblock > .title { margin-left: -1.5em; margin-bottom: 0.75em; }
 .quoteblock blockquote, .quoteblock blockquote p { color: #6f6f6f; font-size: 0.9rem; line-height: 1.75; word-spacing: 0.1em; letter-spacing: 0; font-style: italic; text-align: justify; }
-.quoteblock { margin: 20pt 4em 20pt 4em; padding: 0 1em 0 1em; border-left: 1px solid #ddd; }
 .quoteblock blockquote { margin: 0; padding: 0; border: 0; }
 .quoteblock blockquote p:before { content: "\201c"; margin-right: 0.2em }
 .quoteblock blockquote p:after { content: "\201d"; margin-left: 0.2em  }
