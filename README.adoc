@@ -208,8 +208,11 @@ return it to the Ring adapter of th web server you are running.
 
 ==== References
 
-* 503 Service Unavailable -- https://tools.ietf.org/html/rfc7231#section-6.6.4[Section 6.6.4, RFC 7231]
-* Retry-After -- https://tools.ietf.org/html/rfc7231#section-7.1.3[Section 7.1.3, RFC 7231]
+[cols="5,5"]
+|===
+|503 Service Unavailable|https://tools.ietf.org/html/rfc7231#section-6.6.4[Section 6.6.4, RFC 7231]
+|Retry-After|https://tools.ietf.org/html/rfc7231#section-7.1.3[Section 7.1.3, RFC 7231]
+|===
 
 [[check-implemented-method]]
 === Check method is implemented
@@ -252,7 +255,10 @@ The spin library offers a helper function that checks the request method is one 
 
 ==== References
 
-* 501 Not Implemented -- https://tools.ietf.org/html/rfc7231#section-6.6.2[Section 6.6.2, RFC 7231]
+[cols="5,5"]
+|===
+|501 Not Implemented|https://tools.ietf.org/html/rfc7231#section-6.6.2[Section 6.6.2, RFC 7231]
+|===
 
 [[locate-resource]]
 === Locate the resource
@@ -264,7 +270,7 @@ ____
 
 . Use the URL of the request to lookup or otherwise locate the resource object (which can be null).
 
-.. Hold this data structure as a variable, and go to <<the next step>>.
+.. Hold this data structure as a variable, and go to <<authenticate-request,the next step>>.
 
 Typically, a resource object will include the following:
 
@@ -295,6 +301,7 @@ included in the *resource* too.
 TIP: Try to avoid using the *request method* when locating a resource--a
 *resource* value should encompass _all_ its methods.
 
+.The resource structure
 ====
 In Clojure, you might choose to use a map as a *resource*.
 
@@ -374,7 +381,7 @@ guide), rather than routing straight to a resource's _implementation code_ and
 having to duplicate the interface code for each method on each resource.
 ****
 
-
+[[authenticate-request]]
 === Authenticate the request
 
 . Add to the request, any roles, credentials or entitlements that can be
@@ -405,32 +412,84 @@ resource to the user.
 
 . If the request is not valid, throw an exception containing a 400 response.
 
-This step might also involve validating parameters, for example, to meet the expectations of a set of OpenAPI parameter declarations.
+This step might also involve validating parameters, for example, to meet the
+expectations of a set of OpenAPI parameter declarations.
 
 [[check-method-allowed]]
 === Check method allowed
 
 . Check the request method against the methods allowed by the resource.
 
-.. If the request method isn't allowed, throw an exception containing a '405 (Method Not Allowed)' error response and an `Allow` header.
+.. If the request method isn't allowed, return a '405 (Method Not Allowed)'
+error response containing an `Allow` header.
 
-=== Record the time
+[[record-the-date]]
+=== Record the date
 
-. Get the system time and store it in a variable.
+. Get the system time and store it in a variable. This will now be referred to
+as the *message origination date* for the response.
 
-=== Establish the current representations
+[[determine-current-representations]]
+=== Determine the current representations
 
-. Using the resource, determine the current representations and store in a
+A representation consists of both _data_ (e.g. an HTML document, a JPEG image)
+and _metadata_, called *representation metadata*.
+
+Representation metadata may include the following:
+
+[cols="3m,8,4m"]
+|===
+|Key|Description|Example
+
+|"content-type"|The representation's media type. If a `text` type, also inclues the charset|text/html;charset=utf-8
+|"content-encoding"|How the representation's data is encoded|gzip
+|"content-language"|The human language used|en-US
+|"content-location"|The URL of the representation, if different from the request URL|
+|"last-modified"|When the representation was last modified|Tue, 1 Dec 2020 09:00:00 GMT
+|"etag"|A tag, uniquely identifying the version of this representation|\"1465419893\"
+|===
+
+Representation data consists of *payload header fields* and a stream of bytes. Payload header fields may include the following:
+
+[cols="3m,8"]
+|===
+|Key|Description
+
+|"content-length"|The length of the representation's stream of bytes
+|"content-range"|If a partial response, the range of the representation enclosed in the payload
+|"trailer"|Additional fields at the end of a chunked message
+|"transfer-encoding"|How the payload has been encoded in the message body
+|===
+
+
+The vast majority of resources map to a single representation, but some
+resources can have multiple representations.
+
+A representation reflects the current state of the resource. Where there are
+multiple representations, each representation should correspond with the current
+state of the resource.
+
+. Using the resource, determine the currently mapped representations and store in a
 variable.
 
-=== Negotiate the most acceptable current representation
+==== References
+
+[cols="5,5"]
+|===
+|Representation Metadata|https://tools.ietf.org/html/rfc7231#section-3.1[Section 3.1, RFC 7231]
+|Payload Semantics|https://tools.ietf.org/html/rfc7231#section-3.3[Section 3.3, RFC 7231]
+|Last-Modified|https://tools.ietf.org/html/rfc7232#section-2.2[Section 2.2, RFC 7232]
+|ETag|https://tools.ietf.org/html/rfc7232#section-2.3[Section 2.3, RFC 7232]
+|===
+
+=== Select the most acceptable current representation
 
 For the given *resource*, determine the content negotiation strategy and follow
 one of the sections below (although it is permissable to use a hybrid or
 combination of strategies).
 
-TIP: If in doubt, use <<proactive-content-negotiation,proactive content negotiation>>, which is by far the most
-commonly strategy.
+TIP: If in doubt, use <<proactive-content-negotiation,proactive content
+negotiation>>, which is by far the most commonly employed strategy.
 
 * <<proactive-content-negotiation>>
 * <<reactive-content-negotiation>>
@@ -438,17 +497,22 @@ commonly strategy.
 [[proactive-content-negotiation]]
 ==== Proactive Content Negotiation
 
-1. Determine the set of available current representations for the resource.
+. Load the current representations found in <<determine-current-representations>>.
 
-2. If step 1. yields no representations, and the method is a GET or HEAD, throw
-an exception containing a `404 (Not Found)` error response.
+. If there are no representations, and the method is a GET or HEAD, return a
+`404 (Not Found)` error response.
 
-3. Select the most acceptable representation from this set, using the preferences contained in the request.
-.. If there is no such acceptable representation, and the method is a GET
-or HEAD, throw an exception containing a `406 (Not Acceptable)` error
+. Select the most acceptable representation from this set, using the
+preferences contained in the request.
+
+.. If there is no such acceptable representation, and the method is a GET or
+HEAD, throw an exception containing a `406 (Not Acceptable)` error
 response. Construct a body containing links to each unacceptable representation
 from step 1.
-.. Otherwise store the most acceptable current representation in a variable called `selected-representation` to move to the next step.
+
+.. Otherwise store the most acceptable current representation. This will be
+referred to from now on as the
+*selected-representation*. Move to <<perform-the-action,the next step>>.
 
 ****
 The https://github.com/juxt/pick[pick] library is written expressly for the
@@ -470,6 +534,7 @@ See https://github.com/juxt/pick for further details.
 
 5. If step 3. yields multiple *representations*, respond with a 300 response and construct a body containing links to each representation in this filtered set.
 
+[[perform-the-action]]
 === Perform the action
 
 You should now perform the action associated with the request method.
@@ -485,18 +550,28 @@ You should now perform the action associated with the request method.
 [[get]]
 == The GET (and HEAD) methods
 
-NOTE: The procedure for HEAD is identical to that of GET, with the exception
-that we do not produce any body in the response.
-
 . <<evaluate-preconditions,Evaluate the preconditions>>
 
-. Optionally, if there is a `Range` header, parse it.
+. If there is a `Range` header in the request, and ranges are supported on this
+resource, parse its value.
 
 .. If the units of the range header isn't supported by the resource, throw an exception with a `400 Bad Request` error response.
 
-.. If there is an `If-Range` header, process it (TODO)
+. Compute the payload header fields and payload response body
 
-. Get the payload of the selected representation
+.. If there is a valid `If-Range` header, and ranges are supported, set the status to 206, add a `Content-Range` header to the payload header fields, and compute the shorter body to reflect the requested range.
+
+. Add the `Date` header, using the message origination date stored in <<record-the-date>>.
+
+. If supported, add an `Accept Ranges` header.
+
+. Add the representation metadata to the response headers.
+
+.. Only include the `Content-Location` metadata if this is different from the URL of the request.
+
+. Add the payload header fields.
+
+. If the request method is GET, add the representation's data stream to the response's body.
 
 [[post]]
 == The POST method
@@ -625,7 +700,11 @@ throwing an exception at any point one of the preconditions fails.
 
 ==== References
 
-See RFC 7233 Section 6
+[cols="5,5"]
+|===
+|Evaluation|https://tools.ietf.org/html/rfc7232#section-5[Section 5, RFC 7232]
+|Precedence|https://tools.ietf.org/html/rfc7232#section-6[Section 6, RFC 7232]
+|===
 
 [[receive-representation-in-request]]
 === Receiving a representation enclosed in a request
