@@ -320,8 +320,7 @@ prefix. Many other additional application-specific entries may be added.
  [{::spin/representation-metadata <3>
    {"content-type" "text/plain;charset=utf-8"
     "last-modified" "Mon, 28 Dec 2020 15:00:00 GMT"}
-   ::spin/representation-data
-   {::spin/bytes …}}]
+   ::spin/bytes …}]
 
  ::spin/max-content-length 8192 <4>
  ::spin/acceptable <5>
