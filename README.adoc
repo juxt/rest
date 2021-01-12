@@ -424,6 +424,12 @@ expectations of a set of OpenAPI parameter declarations.
 .. If the request method isn't allowed, return a '405 (Method Not Allowed)'
 error response containing an `Allow` header.
 
+[NOTE]
+--
+The rationale for authorizing the request prior to checking that the method is
+allowed is to hide which methods are allowed to unauthorized users.
+--
+
 [[record-the-date]]
 === Record the date
 
