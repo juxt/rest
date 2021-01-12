@@ -351,14 +351,14 @@ modelled as data values, they can be stored in a key/value database. Locating a
 resource is simply a matter of looking it up using the URL as the key.
 ====
 
-.Why not use a router?
+.Routing
 ****
 Many, if not most, web frameworks provide a mechanism for 'routing' the URL to
 some code logic or function that will perform the method requested in the
 request.
 
-This makes sense for tranditional RPC-based protocols where each procedure is
-specific to an application.
+This makes sense for traditional RPC-based protocols where each endpoint
+represents custom logic, specific to an application.
 
 But with REST, procedures are not specific to the application, but standardised
 as part of a
@@ -367,13 +367,14 @@ interface].
 
 [quote,Roy Fielding,Chapter 5 – Representational State Transfer (REST)]
 ____
-The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components.
+The central feature that distinguishes the REST architectural style from other
+network-based styles is its emphasis on a uniform interface between components.
 ____
 
-While there is certainly some "implementation details behind the resource
-interface (which are) hidden by the server", these implementation details are
-not _only_ consideration when creating a REST service. The resource interface
-itself needs to be implemented too!
+While there are certainly some custom implementation details 'behind the
+resource interface' to work on, these are not the _only_ consideration when
+creating a REST service. The resource interface itself needs to be implemented
+too!
 
 For this reason, it is better to use a router to locate a _data description of
 the resource_, which can be fed into standard algorithms (as we do in this
