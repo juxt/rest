@@ -312,7 +312,7 @@ prefix. Many other additional application-specific entries may be added.
 
 [source,clojure]
 ----
-{::spin/path "/orders"
+{::path "/orders"
 
  ::spin/methods #{:get :post :put :delete} <1>
 
