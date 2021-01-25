@@ -129,7 +129,7 @@ Good luck, be brave, take small deliberate steps, one at a time.
 === Is there a complete solution somewhere?
 
 If you want a complete solution to study, you can find one
-https://github.com/juxt/spin/blob/master/examples/demo/src/demo.clj[here].
+https://github.com/juxt/spin/blob/master/examples/demo/src/demo.clj[in the Spin example code].
 
 === How to get involved?
 
