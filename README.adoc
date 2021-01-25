@@ -71,7 +71,7 @@ The way we will achieve such code _economy_ is by using a declarative
 approach. Where possible, your code should behave according to the details of
 individual resources provided as input argument.
 
-In our view, all code should either be implementing a compiler or an interpretter.
+In our view, all code should either be implementing a compiler or an interpreter.
 
 TIP: Another benefit of this approach is that having separated the code from the
 data declarations that drive it, you can store that data inside a
@@ -129,7 +129,7 @@ Good luck, be brave, take small deliberate steps, one at a time.
 === Is there a complete solution somewhere?
 
 If you want a complete solution to study, you can find one
-https://github.com/juxt/spin/blob/master/examples/demo/src/demo.clj[here].
+https://github.com/juxt/spin/blob/master/examples/demo/src/demo.clj[in the Spin example code].
 
 === How to get involved?
 
@@ -181,7 +181,7 @@ step>>.
 
 NOTE: How you can tell this is beyond the scope of this guide. It might be a feature
 of the web listener you are working with. Or you might want to build something
-that signals that new web requests should temporarily suspended. If you don't
+that signals that new web requests should be temporarily suspended. If you don't
 know, just skip this section, it's optional.
 
 ====
@@ -203,7 +203,7 @@ Your whole handler should be wrapped in a
 https://clojuredocs.org/clojure.core/try[try/catch] block.
 
 The catch block should catch the exception, extract the Ring response, and
-return it to the Ring adapter of th web server you are running.
+return it to the Ring adapter of the web server you are running.
 ====
 
 ==== References
@@ -447,7 +447,7 @@ Representation metadata may include the following:
 |===
 |Key|Description|Example
 
-|"content-type"|The representation's media type. If a `text` type, also inclues the charset|text/html;charset=utf-8
+|"content-type"|The representation's media type. If a `text` type, also includes the charset|text/html;charset=utf-8
 |"content-encoding"|How the representation's data is encoded|gzip
 |"content-language"|The human language used|en-US
 |"content-location"|The URL of the representation, if different from the request URL|
@@ -569,7 +569,7 @@ resource, parse its value.
 
 . Add the `Date` header, using the message origination date stored in <<record-the-date>>.
 
-. If supported, add an `Accept Ranges` header.
+. If supported, add an `Accept-Ranges` header.
 
 . Add the representation metadata to the response headers.
 
@@ -613,7 +613,7 @@ the resource needs to change, and that might involve changing all its current
 representations together. Ideally, this should happen atomically (all changes
 should succeed together, or fail together).
 
-We must also evaluate any preconditions just before perform the required
+We must also evaluate any preconditions just before performing the required
 updates. To guarentee that we will avoid losing updates, we should run the
 preconditions at the beginning of the same transaction. That way, race
 conditions will be avoided.
