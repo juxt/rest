@@ -600,12 +600,20 @@ created or replaced with the state defined by the representation
 enclosed in the request message payload.
 ____
 
-The first step in processing a PUT request is to receive the "representation
-enclosed in the request message payload" and check its validity.
+The first step in processing a PUT request is to check if there's a
+`Content-Range` header in the request. If so, you should return a 400 error
+response.
+
+The next step is to receive the "representation enclosed in the request message
+payload" and check its validity.
 
 Here is the procedure:
 
-. <<receive-representation-in-request,Receive the representation in the request>>
+. Check if there's a `Content-Range` in the request. If so, return a 400 error
+response.
+
+. <<receive-representation-in-request,Receive the representation in the
+request>>
 
 The second part of processing a PUT request is to update the state of the
 resource. The representation read from the request indicates that the state of
